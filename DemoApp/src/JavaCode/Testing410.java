@@ -41,7 +41,7 @@ public class Testing410 extends Application {
         primaryStage.setTitle("Sentiment Analysis");
         Tooltip tool = new Tooltip();
         
-        Analysis demo = new Analysis("C:\\Users\\rob\\Desktop\\JarConfig\\config.properties");
+        Analysis demo = new Analysis("this should have your file path to the config.properties file where you set up where your dictionaries are");
         
         
         BorderPane backGroundPane = new BorderPane();
