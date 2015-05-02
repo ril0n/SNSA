@@ -9,3 +9,7 @@ Social Networking Sentiment Analysis Project:
 ANEW: http://csea.phhp.ufl.edu/media/anewmessage.html
 SentiWordNet: http://sentiwordnet.isti.cnr.it/
 Alex Davies Research: http://alexdavies.net/twitter-sentiment-analysis/
+
+
+
+more to add
