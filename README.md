@@ -6,8 +6,8 @@ Social Networking Sentiment Analysis Project:
 
 #Here is how you can get each dictionary 
 
-[ANEW](http://csea.phhp.ufl.edu/media/anewmessage.html)||
-[SentiWordNet](http://sentiwordnet.isti.cnr.it/)||
+[ANEW](http://csea.phhp.ufl.edu/media/anewmessage.html) ||
+[SentiWordNet](http://sentiwordnet.isti.cnr.it/) ||
 [Alex Davies Research](http://alexdavies.net/twitter-sentiment-analysis/)
 
 #Some knowledge of Mongodb is needed to be able to use this project  
