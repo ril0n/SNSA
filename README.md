@@ -10,6 +10,9 @@ ANEW: http://csea.phhp.ufl.edu/media/anewmessage.html
 SentiWordNet: http://sentiwordnet.isti.cnr.it/
 Alex Davies Research: http://alexdavies.net/twitter-sentiment-analysis/
 
+#Some knowledge of Mongodb is needed to be able to use this project  
+
+Mongodb is required in this project. It is where all the tweets or other data is stored.
 
 
 more to add
