@@ -18,22 +18,16 @@ import java.util.Properties;
  *
  * @author Rob Schultz
  * 
- * 
  * Sentiment analysis library with the choice of three different libraries able to use
  */
 public class Analysis {
        private Map<String, Double> pleasureDict;
        private Map<String, Double> arousalDict;
-       private Map<String, Double> dominanceDict ;
-
+       private Map<String, Double> dominanceDict;
        private Map<String, Double> happy;
-       private Map<String, Double> sad ;
+       private Map<String, Double> sad;
        private Map<String, Double> sentiWord; 
-    
-     //string or file
-       //set config file
-       //"C:\\Users\\rob\\Documents\\NetBeansProjects\\SentimentAnalysis\\src\\senti\\config.properties"
-   
+       
    /**
     * calling this will create all dictionaries and prepare you to be able to do analysis
     * @param filePath is the file path to your config file 
@@ -52,8 +46,6 @@ public class Analysis {
                     daviesDictonaryBuilder(prop.getProperty("davies"));
                 if(prop.getProperty("senti")!= null)
                     sentiWordNet(prop.getProperty("senti"));
-		
- 
 	} catch (IOException ex) {
 		ex.printStackTrace();
 	} finally {
@@ -70,7 +62,6 @@ public class Analysis {
     private void sentiWordNet(String pathToSWN)
             {
                  Map<String, Double> dictionary = new HashMap();
-
 		// From String to list of doubles.
 		HashMap<String, HashMap<Integer, Double>> tempDictionary = new HashMap();
 
@@ -585,5 +576,77 @@ public class Analysis {
                 
                 calculation = calculation/amount;
 		return calculation;
-	}           
+	} 
+	
+	/**
+	 * Used to check whether or not the pleasure part of the ANEW dictionary is avaliable or not
+	 * 
+	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
+	 */
+	public boolean pDictIsAvalabile()
+       {
+       	if(pleasureDict != null)
+       	return true;
+       	else return false;
+       }
+       
+       /**
+	 * Used to check whether or not the arousal part of the ANEW dictionary is avaliable or not
+	 * 
+	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
+	 */
+       public boolean aDictIsAvalabile()
+       {
+       	if(arousalDict != null)
+       	return true;
+       	else return false;
+       }
+       
+       /**
+	 * Used to check whether or not the dominance part of the ANEW dictionary is avaliable or not
+	 * 
+	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
+	 */
+       public boolean dDictIsAvalabile()
+       {
+       	if(dominanceDict != null)
+       	return true;
+       	else return false;
+       }
+       
+       /**
+	 * Used to check whether or not the happy part of the Alex Davies dictionary is avaliable or not
+	 * 
+	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
+	 */
+       public boolean happyDictAvaliable()
+       {
+       	 	if(happy != null)
+       	 		return true;
+		else return false;
+       }
+       
+       /**
+	 * Used to check whether or not the sad part of the Alex Davies dictionary is avaliable or not
+	 * 
+	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
+	 */
+       public boolean sadDictAvaliable()
+       {
+       	 	if(sad != null)
+       	 		return true;
+		else return false;
+       }
+       
+       /**
+	 * Used to check whether or not the sentiWord dictionary is avaliable or not
+	 * 
+	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
+	 */
+       public boolean sentiDictAvaliable()
+       {
+       	 	if(sentiWord != null)
+       	 		return true;
+		else return false;
+       }
 }
