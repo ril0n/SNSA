@@ -42,9 +42,6 @@ public class TwitStreaming {
     public int getType(){
         return type;
     }
-    /**
-     * @param args the command line arguments
-     */
     
     
     public void setConsumerKey(String EnterConsumerKey){
