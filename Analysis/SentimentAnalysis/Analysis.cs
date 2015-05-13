@@ -17,6 +17,15 @@ namespace ConsoleApplication1
 
         public Analysis(String filePath)
         {
+            try
+            {
+
+            }
+            catch(InvalidCastException e)
+            {
+                //do nothing
+            }
+
 
         }
 
