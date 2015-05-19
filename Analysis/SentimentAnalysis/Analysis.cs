@@ -33,15 +33,16 @@ namespace ConsoleApplication1
             Dictionary<string, double> dictionary = new Dictionary<string, double>();
             int lineNumber = 0;
             string line;
-
+            System.IO.StreamReader csv;
+            try {
             // Read the file and display it line by line.
-            System.IO.StreamReader csv = new System.IO.StreamReader(@filePath);
+            
             while ((line = csv.ReadLine()) != null)
             {   lineNumber++;
-
-                if(line.Trim().StartsWith("#"))
+                csv = new System.IO.StreamReader(@filePath);
+                if(line.Trim().StartsWith("#")){
                 // We use tab separation
-					String[] data = line.split("\t");
+					string[] data = line.Split('\t');
 					String wordTypeMarker = data[0];
 
 					// Example line:
@@ -50,46 +51,44 @@ namespace ConsoleApplication1
 					// ascetic#2 practicing great self-denial;...etc
 
 					// Is it a valid line? Otherwise, through exception.
-					if (data.length != 6) {
+					if (data.Length != 6) {
 						throw new IllegalArgumentException(
 								"Incorrect tabulation format in file, line: "
 										+ lineNumber);
 					}
 
 					// Calculate synset score as score = PosS - NegS
-					Double synsetScore = Double.parseDouble(data[2])
-							- Double.parseDouble(data[3]);
+					Double synsetScore = Convert.ToDouble(data[2]) - Convert.ToDouble(data[3]);
 
 					// Get all Synset terms
-					String[] synTermsSplit = data[4].split(" ");
+					String[] synTermsSplit = data[4].Split(' ');
 
 					// Go through all terms of current synset.
-					for (String synTermSplit : synTermsSplit) {
+					foreach (string synTermSplit in synTermsSplit) {
 						// Get synterm and synterm rank
-						String[] synTermAndRank = synTermSplit.split("#");
+						String[] synTermAndRank = synTermSplit.Split('#');
 						String synTerm = synTermAndRank[0] + "#"
 								+ wordTypeMarker;
 
-						int synTermRank = Integer.parseInt(synTermAndRank[1]);
+						int synTermRank = Convert.ToInt32(synTermAndRank[1]);
 						// What we get here is a map of the type:
 						// term -> {score of synset#1, score of synset#2...}
 
 						// Add map to term if it doesn't have one
-						if (!tempDictionary.containsKey(synTerm)) {
-							tempDictionary.put(synTerm,
+						if (!dictionary.containsKey(synTerm)) {
+							dictionary.put(synTerm,
 									new HashMap());
 						}
 
 						// Add synset link to synterm
-						tempDictionary.get(synTerm).put(synTermRank,
+						dictionary.get(synTerm).put(synTermRank,
 								synsetScore);
 					}
 				}
 			}
 
                      // Go through all the terms.
-                        tempDictionary
-                                .entrySet().stream().forEach((entry) -> {
+                        dictionary.entrySet().stream().forEach((entry) -> {
                                     String word = entry.getKey();
                                     Map<Integer, Double> synSetScoreMap = entry.getValue();
                                     
@@ -108,16 +107,18 @@ namespace ConsoleApplication1
                                     
                                     dictionary.put(word, score);
                      });
-		} catch (IOException | IllegalArgumentException e) {
-		} finally {
+}
+            catch (Exception e) {
+                        } 
+            finally {
 			if (csv != null) {
-                            try{
-				csv.close();
-                            }
-                            catch(Exception e)
-                            {
-                                System.out.println(e);
-                            }
+                try{
+				    csv.Dispose();
+                }
+                catch(Exception e)
+                {
+                               
+                }
 			}
                         sentiWord= dictionary;
 		}
