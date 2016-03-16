@@ -1,6 +1,9 @@
 
-package senti;
+package edu.lander.sentiment;
 
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -18,16 +21,24 @@ import java.util.Properties;
  *
  * @author Rob Schultz
  * 
+ * 
  * Sentiment analysis library with the choice of three different libraries able to use
  */
 public class Analysis {
-       private Map<String, Double> pleasureDict;
-       private Map<String, Double> arousalDict;
-       private Map<String, Double> dominanceDict;
-       private Map<String, Double> happy;
-       private Map<String, Double> sad;
-       private Map<String, Double> sentiWord; 
        
+    private Map<String, List<Map>> dictonaries = new HashMap();
+       private Map<String, Double> happy;
+       private Map<String, Double> sad ;
+       private Map<String, Double> sentiWord;
+       final static int PLEASURE = 0;
+       final static int AROUSAL = 1;
+       final static int DOMINANCE = 2;
+       
+    
+     //string or file
+       //set config file
+       //"C:\\Users\\rob\\Documents\\NetBeansProjects\\SentimentAnalysis\\src\\senti\\config.properties"
+   
    /**
     * calling this will create all dictionaries and prepare you to be able to do analysis
     * @param filePath is the file path to your config file 
@@ -40,12 +51,27 @@ public class Analysis {
         	input = new FileInputStream(filePath);
                 // load a properties file
 		prop.load(input);
-                if(prop.getProperty("anew")!= null)
-                    anewDictCreation(prop.getProperty("anew"));
+                if(prop.getProperty("english_anew")!= null)
+                    anewDictCreation("english",prop.getProperty("english_anew"));
                 if(prop.getProperty("davies")!= null)
                     daviesDictonaryBuilder(prop.getProperty("davies"));
                 if(prop.getProperty("senti")!= null)
                     sentiWordNet(prop.getProperty("senti"));
+                if(prop.getProperty("french_anew")!= null)
+                    anewDictCreation("french",prop.getProperty("french_anew"));
+                if(prop.getProperty("german_anew")!= null)
+                    anewDictCreation("german",prop.getProperty("german_anew"));
+                if(prop.getProperty("japanese_anew")!= null)
+                    anewDictCreation("japanese",prop.getProperty("japanese_anew"));
+                if(prop.getProperty("korean")!= null)
+                    anewDictCreation("korean",prop.getProperty("korean_anew"));
+                if(prop.getProperty("portugese_anew")!= null)
+                    anewDictCreation("portugese",prop.getProperty("portugese_anew"));
+		if(prop.getProperty("spanish_anew")!= null)
+                    anewDictCreation("spanish",prop.getProperty("spanish_anew"));
+                if(prop.getProperty("swedish_anew")!= null)
+                    anewDictCreation("swedish",prop.getProperty("swedish_anew"));
+ 
 	} catch (IOException ex) {
 		ex.printStackTrace();
 	} finally {
@@ -54,14 +80,16 @@ public class Analysis {
 				input.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+                                System.out.println("Error in config file");
 			}
 		}
 	}
     }   
-     
+    
     private void sentiWordNet(String pathToSWN)
             {
                  Map<String, Double> dictionary = new HashMap();
+
 		// From String to list of doubles.
 		HashMap<String, HashMap<Integer, Double>> tempDictionary = new HashMap();
 
@@ -233,8 +261,12 @@ public class Analysis {
          }
 }
     
-    private void  anewDictCreation(String pathToSWN)
+    private void  anewDictCreation(String dictName,String pathToSWN)
     {
+         Map<String, Double> pleasureDict = new HashMap();
+        Map<String, Double> arousalDict = new HashMap();
+        Map<String, Double> dominanceDict = new HashMap() ;
+       
         Map<String, Double> anewPDict = new HashMap();
         
         String tokens = "";
@@ -268,6 +300,7 @@ public class Analysis {
                     System.out.println(e);
                 }
                pleasureDict =anewPDict;
+               
          }
         
          Map<String, Double> anewADict = new HashMap();
@@ -303,7 +336,7 @@ public class Analysis {
                 {
                     System.out.println(e);
                 }
-               arousalDict= anewADict; 
+               arousalDict= anewADict;
          }
          
         Map<String, Double> anewDDict = new HashMap();
@@ -339,13 +372,59 @@ public class Analysis {
                     System.out.println(e);
                 }
                 dominanceDict= anewDDict;
-                            }
+                
+                List<Map> dicts = new ArrayList<Map>();
+                
+                dicts.add(pleasureDict);
+                dicts.add(arousalDict);
+                dicts.add(dominanceDict);
+                dictonaries.put(dictName, dicts);
+             }
                         }
                 }
          }
     }
-
-         
+    
+    /**
+     * Calculation for the pleasure part of the ANEW English dictionary 
+     * 
+     * 
+     * @param words Sentence that you are wanting to calculate with anew pleasure dictionary
+     * 
+     * @return pleasure score of word given using default language of English
+     */
+     public double pleasureCalc(String words)
+    {
+        return pleasureCalc("english",words);
+    }
+     
+     
+     /**
+     * Calculation for the arousal part of the ANEW English dictionary 
+     * 
+     * 
+     * @param words Sentence that you are wanting to calculate with anew arousal dictionary
+     * 
+     * @return pleasure score of word given using default language of English
+     */
+     public double arousalCalc(String words)
+    {
+        return arousalCalc("english",words);
+    }
+     
+     
+     /**
+     * Calculation for the dominance part of the ANEW English dictionary 
+     * 
+     * 
+     * @param words Sentence that you are wanting to calculate with anew dominance dictionary
+     * 
+     * @return pleasure score of word given using default language of English
+     */
+     public double dominanceCalc(String words)
+    {
+        return dominanceCalc("english",words);
+    }
     
    
     /**
@@ -353,14 +432,17 @@ public class Analysis {
      * 
      * 
      * @param words Sentence that you are wanting to calculate with anew pleasure dictionary
-     * 
+     * @param lang language that is being used 
      * @return this will return a double that is the calculation for the Pleasure part of the sentence 
      */
-    public double pleasureCalc(String words)
+    public double pleasureCalc(String lang, String words)
     {
         String word[] = words.split(" ");
         
-        List<Double> probability = new ArrayList<Double>();
+       List<Double> probability = new ArrayList<Double>();
+       List<Map> getPDict = dictonaries.get(lang);
+       Map<String, Double> pleasureDict = getPDict.get(PLEASURE);
+       
         int amount = 0;
         
         for (String word1 : word) {
@@ -387,14 +469,17 @@ public class Analysis {
      * Arousal calculation of the ANEW dictionary
      * 
      * @param words Sentence that you are wanting to calculate  with anew arousal dictionary
-     * 
+     * @param lang
      * @return this will return a double that is the calculation for the Arousal part of the sentence
      */
-    public double arousalCalc(String words)
+    public double arousalCalc(String lang, String words)
     {
         String word[] = words.split(" ");
         
         List<Double> probability = new ArrayList<Double>();
+        List<Map> getADict = dictonaries.get(lang);
+        Map<String, Double> arousalDict = getADict.get(AROUSAL);
+     
         
         int amount = 0;
         for (String word1 : word) {
@@ -421,15 +506,18 @@ public class Analysis {
     /**
      * Dominance calculation of the ANEW dictionary
      * @param words Sentence that you are wanting to calculate with anew dominance 
-     * 
+     * @param lang
      * @return this will return a double that is the calculation for the Dominance part of the sentence
      */
-    public double dominanceCalc(String words)
+    public double dominanceCalc(String lang, String words)
     {
         String word[] = words.split(" ");
         
         List<Double> probability = new ArrayList<Double>();
+        List<Map> getDDict = dictonaries.get(lang);
+        Map<String, Double> dominanceDict = getDDict.get(DOMINANCE);
         
+     
         int amount = 0;
         for (String word1 : word) {
             Iterator it = dominanceDict.entrySet().iterator();
@@ -577,76 +665,50 @@ public class Analysis {
                 calculation = calculation/amount;
 		return calculation;
 	} 
-	
-	/**
-	 * Used to check whether or not the pleasure part of the ANEW dictionary is avaliable or not
-	 * 
-	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
-	 */
-	public boolean pDictIsAvalabile()
-       {
-       	if(pleasureDict != null)
-       	return true;
-       	else return false;
-       }
-       
-       /**
-	 * Used to check whether or not the arousal part of the ANEW dictionary is avaliable or not
-	 * 
-	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
-	 */
-       public boolean aDictIsAvalabile()
-       {
-       	if(arousalDict != null)
-       	return true;
-       	else return false;
-       }
-       
-       /**
-	 * Used to check whether or not the dominance part of the ANEW dictionary is avaliable or not
-	 * 
-	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
-	 */
-       public boolean dDictIsAvalabile()
-       {
-       	if(dominanceDict != null)
-       	return true;
-       	else return false;
-       }
-       
-       /**
-	 * Used to check whether or not the happy part of the Alex Davies dictionary is avaliable or not
-	 * 
-	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
-	 */
-       public boolean happyDictAvaliable()
-       {
-       	 	if(happy != null)
-       	 		return true;
-		else return false;
-       }
-       
-       /**
-	 * Used to check whether or not the sad part of the Alex Davies dictionary is avaliable or not
-	 * 
-	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
-	 */
-       public boolean sadDictAvaliable()
-       {
-       	 	if(sad != null)
-       	 		return true;
-		else return false;
-       }
-       
-       /**
-	 * Used to check whether or not the sentiWord dictionary is avaliable or not
-	 * 
-	 * @return will return true or false depending on whether the dictionary is avalliable or not: true avalabile, false not avalabile
-	 */
-       public boolean sentiDictAvaliable()
-       {
-       	 	if(sentiWord != null)
-       	 		return true;
-		else return false;
-       }
+ 
+ 
+ /**
+  * User will supply a dbObject containing the user information and the count on the amount of retweets and favorites
+  * use only for twitter
+  * @param dbo database object for twitter
+  * @return users media significance 
+  */
+ public double mediaSigCalc(DBObject dbo)
+ {
+        BasicDBObject userInfo = (BasicDBObject)dbo.get("user");
+
+        Integer rtCount = (Integer) dbo.get("retweet_count");
+        Integer followerCount =(Integer) userInfo.get("followers_count");
+        Integer favCount = (Integer)dbo.get("favorite_count");
+
+        double influentiality = (double)Math.log(followerCount)/ Math.log(1000);
+        double RTratio =  ((double) rtCount/(double)followerCount);
+        double FCratio =  ((double) favCount/(double)followerCount);
+
+        return ((RTratio+FCratio)*influentiality*influentiality*influentiality)+1;
+                        
+ }
+ 
+ /**
+  *  calculate a users media significance by using the data in the order of 
+  * 
+  * @param rtCount the amount of followers they have
+  * @param followerCount the amount of times the data has been shared publicly
+  * @param favCount how many times the data has been liked privately but not shared publicly
+  * @return user media significance
+  */
+ 
+ public double mediaSigCalc( int followerCount,int rtCount, int favCount)
+ {
+        double influentiality = (double)Math.log(followerCount)/ Math.log(1000);
+        double RTratio =  ((double) rtCount/(double)followerCount);
+        double FCratio =  ((double) favCount/(double)followerCount);
+
+        return (RTratio+FCratio)*influentiality*influentiality*influentiality;
+                        
+ }
+ 
+ 
+
+ 
 }
