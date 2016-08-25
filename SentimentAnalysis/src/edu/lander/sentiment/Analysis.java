@@ -34,10 +34,11 @@ public class Analysis {
        final static int AROUSAL = 1;
        final static int DOMINANCE = 2;
        
-    
+    //--------------------------------------------------------------------------------------------------------------\\
      //string or file
        //set config file
        //"C:\\Users\\rob\\Documents\\NetBeansProjects\\SentimentAnalysis\\src\\senti\\config.properties"
+   //--------------------------------------------------------------------------------------------------------------\\
    
    /**
     * calling this will create all dictionaries and prepare you to be able to do analysis
@@ -87,33 +88,26 @@ public class Analysis {
     }   
     
     private void sentiWordNet(String pathToSWN)
-            {
-                 Map<String, Double> dictionary = new HashMap();
-
-		// From String to list of doubles.
+            {	Map<String, Double> dictionary = new HashMap();
 		HashMap<String, HashMap<Integer, Double>> tempDictionary = new HashMap();
-
 		BufferedReader csv = null;
 		try {
 			csv = new BufferedReader(new FileReader(pathToSWN));
 			int lineNumber = 0;
-
 			String line;
 			while ((line = csv.readLine()) != null) {
 				lineNumber++;
-
 				// If it's a comment, skip this line.
 				if (!line.trim().startsWith("#")) {
 					// We use tab separation
 					String[] data = line.split("\t");
 					String wordTypeMarker = data[0];
-
 					// Example line:
 					// POS ID PosS NegS SynsetTerm#sensenumber Desc
 					// a 00009618 0.5 0.25 spartan#4 austere#3 ascetical#2
 					// ascetic#2 practicing great self-denial;...etc
 
-					// Is it a valid line? Otherwise, through exception.
+					// Is it a valid line? Otherwise, throw exception.
 					if (data.length != 6) {
 						throw new IllegalArgumentException(
 								"Incorrect tabulation format in file, line: "
@@ -156,9 +150,7 @@ public class Analysis {
                                 .entrySet().stream().forEach((entry) -> {
                                     String word = entry.getKey();
                                     Map<Integer, Double> synSetScoreMap = entry.getValue();
-                                    
-                                    // Calculate weighted average. Weigh the synsets according to
-                                    // their rank.
+                                    // Calculate weighted average. Weigh the synsets according to their rank.
                                     // Score= 1/2*first + 1/3*second + 1/4*third ..... etc.
                                     // Sum = 1/1 + 1/2 + 1/3 ...
                                     double score = 0.0;
@@ -169,7 +161,6 @@ public class Analysis {
                                         sum += 1.0 / (double) setScore.getKey();
                                     }
                                     score /= sum;
-                                    
                                     dictionary.put(word, score);
                      });
 		} catch (IOException | IllegalArgumentException e) {
@@ -179,38 +170,31 @@ public class Analysis {
 				csv.close();
                             }
                             catch(Exception e)
-                            {
-                                System.out.println(e);
+                            {System.out.println(e);
                             }
 			}
                         sentiWord= dictionary;
 		}
-                
             }
     
     private void  daviesDictonaryBuilder(String pathToSWN)
     {
-        Map<String, Double> happy_log_probs = new HashMap<>();
-        String tokens = "";
-        
+         ap<String, Double> happy_log_probs = new HashMap<>();
+         String tokens = "";
          BufferedReader csv = null;
          try {
 			csv = new BufferedReader(new FileReader(pathToSWN));
-			
 			String line;
                         csv.readLine();// skip the header
 			while ((line = csv.readLine()) != null) {
 				String[] data = line.split(",");
 				tokens = data[0];
                                 happy_log_probs.put(tokens, Double.parseDouble(data[1]));
-                                
-                                        
                                         }
         
     }
          catch(IOException | NumberFormatException e)
          {
-             
          }
          finally 
          {
@@ -238,14 +222,11 @@ public class Analysis {
 				String[] data = line.split(",");
 				tokens = data[0];
                                 sad_log_probs.put(sadTokens, Double.parseDouble(data[2]));
-                                
-                                        
                                         }
         
     }
          catch(IOException | NumberFormatException e)
          {
-             
          }
          finally{
              if (sadReader != null) {
@@ -263,18 +244,15 @@ public class Analysis {
     
     private void  anewDictCreation(String dictName,String pathToSWN)
     {
-         Map<String, Double> pleasureDict = new HashMap();
+        Map<String, Double> pleasureDict = new HashMap();
         Map<String, Double> arousalDict = new HashMap();
         Map<String, Double> dominanceDict = new HashMap() ;
-       
         Map<String, Double> anewPDict = new HashMap();
-        
         String tokens = "";
         
          BufferedReader csv = null;
          try {
 			csv = new BufferedReader(new FileReader(pathToSWN));
-			
 			String line;
                         csv.readLine();// skip the header
 			while ((line = csv.readLine()) != null) {
@@ -317,8 +295,6 @@ public class Analysis {
 				String[] data = line.split("\t");
 				anewTokens = data[0];
                                 anewADict.put(anewTokens, Double.parseDouble(data[4]));
-                                
-                                        
                                         }
         
     }
@@ -352,8 +328,6 @@ public class Analysis {
 				String[] data = line.split("\t");
 				dominanceTokens = data[0];
                                 anewDDict.put(dominanceTokens, Double.parseDouble(data[2]));
-                                
-                                        
                                         }
         
                         }
@@ -498,9 +472,6 @@ public class Analysis {
         calc = probability.stream().map((probability1) -> probability1).reduce(calc, (accumulator, _item) -> accumulator + _item);
         calc = calc/amount;
         return calc;
-        
-           
-        
     }
     
     /**
@@ -707,8 +678,4 @@ public class Analysis {
         return (RTratio+FCratio)*influentiality*influentiality*influentiality;
                         
  }
- 
- 
-
- 
 }
